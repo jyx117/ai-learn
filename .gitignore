@@ -1,5 +1,5 @@
-/class*/data/**/*.jpg
-/class*/data/**/*.img
+/project/project*/data/**/*.jpg
+/project/project*/data/**/*.img
 /venv
 
 ##ignore this file##
