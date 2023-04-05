@@ -1,6 +1,6 @@
 /class*/data/**/*.jpg
 /class*/data/**/*.img
-
+/venv
 
 ##ignore this file##
 /target/
