@@ -9,6 +9,7 @@
 /chapter/chapter*/data/*
 /chapter/chapter*/*/data/*
 /venv
+*.pyc
 
 ##ignore this file##
 /target/
