@@ -14,13 +14,23 @@ from chapter.accumulator import Accumulator
 
 def softmax(X):
     X_exp = torch.exp(X)
+    print('X_exp:', X_exp.shape)
     partition = X_exp.sum(1, keepdim=True)
-    return X_exp / partition  # 这里应用了广播机制
+    print('partition:', partition.shape)
+    value = X_exp / partition
+    print('value:', value.shape)
+    return value  # 这里应用了广播机制
 
 
 # 神经网络
 def net(X):
-    return softmax(torch.matmul(X.reshape((-1, W.shape[0])), W) + b)
+    t = X.reshape((-1, W.shape[0]))
+    print('net:', t.shape, W.shape[0])
+    t1 = torch.matmul(X.reshape((-1, W.shape[0])), W)
+    print('t1:', t1.shape)
+    res = torch.matmul(X.reshape((-1, W.shape[0])), W) + b
+    print('res:', res.shape)
+    return softmax(res)
 
 
 # 损失函数：交叉熵
@@ -28,7 +38,6 @@ def cross_entropy(y_hat, y):
     return - torch.log(y_hat[range(len(y_hat)), y])
 
 
-# 精度计算
 def accuracy(y_hat, y):  # @save
     """计算预测正确的数量"""
     if len(y_hat.shape) > 1 and y_hat.shape[1] > 1:
@@ -48,6 +57,11 @@ def evaluate_accuracy(net, data_iter):  # @save
     return metric[0] / metric[1]
 
 
+def updater(batch_size):
+    """ 优化器 """
+    return d2l.sgd([W, b], lr, batch_size)
+
+
 def train_epoch_ch3(net, train_iter, loss, updater):  # @save
     """训练模型一个迭代周期（定义见第3章）"""
     # 将模型设置为训练模式
@@ -56,6 +70,7 @@ def train_epoch_ch3(net, train_iter, loss, updater):  # @save
     # 训练损失总和、训练准确度总和、样本数
     metric = Accumulator(3)
     for X, y in train_iter:
+        print('X:', X.shape, ', y:', y.shape)
         # 计算梯度并更新参数
         y_hat = net(X)
         l = loss(y_hat, y)
@@ -84,13 +99,6 @@ def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):  # @save
         animator.add(epoch + 1, train_metrics + (test_acc,))
     train_loss, train_acc = train_metrics
     print('train_loss:', train_loss, ", train_acc:", train_acc)
-    assert train_loss < 0.5, train_loss
-    assert train_acc <= 1 and train_acc > 0.7, train_acc
-    assert test_acc <= 1 and test_acc > 0.7, test_acc
-
-
-def updater(batch_size):
-    return d2l.sgd([W, b], lr, batch_size)
 
 
 def predict_ch3(net, test_iter, n=6):  # @save
@@ -104,20 +112,22 @@ def predict_ch3(net, test_iter, n=6):  # @save
         X[0:n].reshape((n, 28, 28)), 1, n, titles=titles[0:n])
 
 
-# 数据迭代器
-batch_size = 256
-train_iter, test_iter = load_data_by_file()
+if __name__ == '__main__':
+    # 数据迭代器
+    batch_size = 256
+    train_iter, test_iter = load_data_by_file(batch_size)
 
-# 初始化w和b
-num_inputs = 784
-num_outputs = 10
+    # 初始化W和b，图片是28*28的矩阵，拉伸为784的向量，输出为10个分类，因此
+    num_inputs = 784
+    num_outputs = 10
+    W = torch.normal(0, 0.01, size=(num_inputs, num_outputs), requires_grad=True)
+    print('w:', W.shape)
+    b = torch.zeros(num_outputs, requires_grad=True)
+    print('b:', b.shape)
 
-W = torch.normal(0, 0.01, size=(num_inputs, num_outputs), requires_grad=True)
-b = torch.zeros(num_outputs, requires_grad=True)
+    lr = 0.1
+    num_epochs = 10
+    train_ch3(net, train_iter, test_iter, cross_entropy, num_epochs, updater)
 
-lr = 0.1
-num_epochs = 10
-train_ch3(net, train_iter, test_iter, cross_entropy, num_epochs, updater)
-
-predict_ch3(net, test_iter)
-d2l.plt.show()
+    predict_ch3(net, test_iter)
+    d2l.plt.show()

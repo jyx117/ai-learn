@@ -7,7 +7,9 @@ def synthetic_data(w, b, num_examples):  # @save
     """生成y=Xw+b+噪声"""
     X = torch.normal(0, 1, (num_examples, len(w)))
     y = torch.matmul(X, w) + b
+    print('y1:', y.shape, X[0], b, y[0])
     y += torch.normal(0, 0.01, y.shape)
+    print('y2:', y.shape)
     return X, y.reshape((-1, 1))
 
 
@@ -43,6 +45,7 @@ def sgd(params, lr, batch_size):  # @save
 true_w = torch.tensor([2, -3.4])
 true_b = 4.2
 features, labels = synthetic_data(true_w, true_b, 50)
+print('true_w:', true_w.shape, features.shape, labels.shape)
 
 batch_size = 10
 w = torch.normal(0, 0.01, size=(2, 1), requires_grad=True)
