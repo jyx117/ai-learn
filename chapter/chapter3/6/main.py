@@ -6,10 +6,11 @@
 @date：2023/4/10 4:13 下午
 """
 from d2l import torch as d2l
-from load_data import load_data_by_file
+from chapter.load_data import load_data_by_file
 import torch
 from chapter.animator import Animator
 from chapter.accumulator import Accumulator
+import time
 
 
 def softmax(X):
@@ -96,6 +97,8 @@ def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):  # @save
     for epoch in range(num_epochs):
         train_metrics = train_epoch_ch3(net, train_iter, loss, updater)
         test_acc = evaluate_accuracy(net, test_iter)
+        t1, t2 = train_metrics
+        print(time.time(), ', train_loss:', t1, ", train_acc:", t2, ', test_acc:', test_acc)
         animator.add(epoch + 1, train_metrics + (test_acc,))
     train_loss, train_acc = train_metrics
     print('train_loss:', train_loss, ", train_acc:", train_acc)
@@ -115,7 +118,9 @@ def predict_ch3(net, test_iter, n=6):  # @save
 if __name__ == '__main__':
     # 数据迭代器
     batch_size = 256
-    train_iter, test_iter = load_data_by_file(batch_size)
+    train_file_path = '../../data/fashion-mnist_train.csv'
+    test_file_path = '../../data/fashion-mnist_test.csv'
+    train_iter, test_iter = load_data_by_file(batch_size, train_file_path, test_file_path)
 
     # 初始化W和b，图片是28*28的矩阵，拉伸为784的向量，输出为10个分类，因此
     num_inputs = 784

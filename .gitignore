@@ -1,13 +1,13 @@
 /project/project*/data/**/*.jpg
 /project/project*/data/**/*.img
 /chapter/data/*
-/chapter/*/data/*
+/chapter/data/*
 /chapter/class*/data/*
 /chapter/class*/*/data/*
 /chapter/data/*
-/chapter/*/data/*
-/chapter/chapter*/data/*
-/chapter/chapter*/*/data/*
+/chapter/data/*
+/chapter/data/*
+/chapter/data/*
 /venv
 *.pyc
 

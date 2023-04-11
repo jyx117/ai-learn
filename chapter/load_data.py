@@ -39,7 +39,7 @@ class FMDataset(Dataset):
         return image, label
 
 
-def load_data_by_file(batch_size):
+def load_data_by_file(batch_size, train_file_path, test_file_path):
     image_size = 28
     data_transform = transforms.Compose([
         transforms.ToPILImage(),
@@ -47,8 +47,8 @@ def load_data_by_file(batch_size):
         transforms.Resize(image_size),
         transforms.ToTensor()
     ])
-    train_df = pd.read_csv("./data/fashion-mnist_train.csv")
-    test_df = pd.read_csv("./data/fashion-mnist_test.csv")
+    train_df = pd.read_csv(train_file_path)
+    test_df = pd.read_csv(test_file_path)
     train_data = FMDataset(train_df, data_transform)
     test_data = FMDataset(test_df, data_transform)
     return (
@@ -56,3 +56,7 @@ def load_data_by_file(batch_size):
                    drop_last=True),
         DataLoader(test_data, batch_size=batch_size, shuffle=False, num_workers=get_dataloader_workers())
     )
+
+
+if __name__ == '__main__':
+    load_data_by_file(256)
